@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class inMemoryItemStorage implements ItemStorage {
+public class InMemoryItemStorage implements ItemStorage {
     private final Map<Integer, Item> items = new HashMap<>();
 
     public int generateId() {

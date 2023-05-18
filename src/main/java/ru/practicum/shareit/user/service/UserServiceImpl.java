@@ -63,8 +63,7 @@ public class UserServiceImpl implements UserService {
 
     public void checkEmail(String email) {
         if (!userStorage.isEmailAvailable(email)) {
-            throw new EmailIsNotAvailableException
-                    ("Email " + email + " has been already registered.");
+            throw new EmailIsNotAvailableException("Email " + email + " has been already registered.");
         }
     }
 }
