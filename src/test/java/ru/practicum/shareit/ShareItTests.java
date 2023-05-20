@@ -14,7 +14,7 @@ import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dta.ItemStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dao.UserStorage;
+import ru.practicum.shareit.user.dao.InMemoryUserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -26,7 +26,7 @@ import java.util.List;
 class ShareItTests {
     private final UserService userService;
     private final ItemService itemService;
-    private final UserStorage userStorage;
+    private final InMemoryUserStorage userStorage;
     private final ItemStorage itemStorage;
     User user1;
     User user2;
