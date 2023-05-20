@@ -16,5 +16,6 @@ public interface UserStorage {
     void createUser(User user);
 
     boolean isEmailAvailable(String email);
+
     void setIdToOne();
 }
