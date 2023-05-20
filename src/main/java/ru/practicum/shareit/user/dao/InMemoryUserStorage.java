@@ -12,6 +12,10 @@ import java.util.Map;
 public class InMemoryUserStorage implements UserStorage {
     Map<Integer, User> users = new HashMap<>();
     private static int userId = 1;
+    @Override
+    public void setIdToOne(){
+        userId=1;
+    }
 
     @Override
     public int generateId() {

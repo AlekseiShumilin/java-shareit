@@ -1,10 +1,13 @@
 package ru.practicum.shareit.user.model;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
-    private int id;
-    private String name;
-    private String email;
+    int id;
+    String name;
+    String email;
 }
