@@ -10,18 +10,18 @@ import java.util.stream.Collectors;
 
 @Component
 public class InMemoryItemStorage implements ItemStorage {
-    private final Map<Integer, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
 
-    public int generateId() {
-        int id;
+    public Long generateId() {
+        long id;
         if (items.isEmpty()) {
-            id = 1;
+            id = 1L;
         } else {
             id = items.keySet()
                     .stream()
-                    .mapToInt(Integer::valueOf)
+                    .mapToLong(Long::valueOf)
                     .max()
-                    .getAsInt();
+                    .getAsLong();
             id++;
         }
         return id;
@@ -38,7 +38,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item getItem(Integer id) {
+    public Item getItem(Long id) {
         return items.get(id);
     }
 
@@ -48,7 +48,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public void deleteItem(Integer id) {
+    public void deleteItem(Long id) {
         items.remove(id);
     }
 }

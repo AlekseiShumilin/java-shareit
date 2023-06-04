@@ -10,6 +10,31 @@ import javax.validation.UnexpectedTypeException;
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingRequestStatusException(final BookingRequestStatusException e) {
+        return new ErrorResponse(e.getMessage()
+        );
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException e) {
+        return new ErrorResponse(e.getMessage()
+        );
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemUnavailableException(final ItemUnavailableException e) {
+        return new ErrorResponse(e.getMessage()
+        );
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingCreateException(final BookingCreateException e) {
+        return new ErrorResponse(e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
         return new ErrorResponse(

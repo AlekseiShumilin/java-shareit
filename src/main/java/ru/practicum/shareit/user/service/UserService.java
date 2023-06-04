@@ -10,10 +10,10 @@ public interface UserService {
 
     User create(UserDto userDto);
 
-    User update(UserDto userDto, int userId);
+    User update(UserDto userDto, Long userId);
 
-    User getUser(Integer id);
+    User getUser(Long id);
 
-    void deleteUser(Integer userId);
+    void deleteUser(Long userId);
 
 }

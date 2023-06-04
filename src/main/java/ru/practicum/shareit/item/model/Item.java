@@ -1,17 +1,32 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.user.model.User;
 
-@Data
+import javax.persistence.*;
+
+@Entity
+@Table(name = "items")
+@Setter
+@Getter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
-    int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Column
     String name;
+    @Column
     String description;
+    @Column(name = "is_available")
     boolean isAvailable;
-    int owner;
+    @ManyToOne
+    @ToString.Exclude
+    User user;
 
     public Item(String name, String description) {
         this.name = name;
