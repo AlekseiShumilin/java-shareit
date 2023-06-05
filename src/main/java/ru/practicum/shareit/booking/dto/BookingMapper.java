@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.UserNotFoundException;
@@ -10,8 +12,10 @@ import ru.practicum.shareit.user.UserRepository;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingMapper {
-    private final UserRepository userRepository;
+    UserRepository userRepository;
+    ItemMapper itemMapper;
 
     public Booking toBooking(BookingDto bookingDto, Long bookerId, Item item) {
         Booking booking = new Booking();
@@ -27,18 +31,18 @@ public class BookingMapper {
         BookingDtoWithBooker bookingDto = new BookingDtoWithBooker();
 
         bookingDto.setId(booking.getId());
-        bookingDto.setItem(ItemMapper.toItemDto(booking.getItem()));
+        bookingDto.setItem(itemMapper.toItemDto(booking.getItem()));
         bookingDto.setStatus(booking.getStatus());
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());
         bookingDto.setBooker(booking.getBooker());
         return bookingDto;
     }
-    public static BookingDto toBookingDto(Booking booking) {
+    public BookingDto toBookingDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
 
         bookingDto.setId(booking.getId());
-        bookingDto.setItem(ItemMapper.toItemDto(booking.getItem()));
+        bookingDto.setItem(itemMapper.toItemDto(booking.getItem()));
         bookingDto.setStatus(booking.getStatus());
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());

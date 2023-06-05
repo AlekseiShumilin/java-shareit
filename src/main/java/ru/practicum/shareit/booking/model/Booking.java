@@ -29,7 +29,7 @@ public class Booking {
     private LocalDateTime end;
     @ManyToOne
     Item item;
-    @OneToOne
+    @ManyToOne
     User booker;
     @Enumerated(EnumType.STRING)
     BookingStatus status;

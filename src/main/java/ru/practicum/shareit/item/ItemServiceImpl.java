@@ -1,16 +1,22 @@
 package ru.practicum.shareit.item;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exception.BookingRequestStatusException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -22,18 +28,38 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-    private final ItemMapper itemMapper;
-    private final BookingRepository bookingRepository;
+    ItemRepository itemRepository;
+    UserRepository userRepository;
+    ItemMapper itemMapper;
+    BookingMapper bookingMapper;
+    BookingRepository bookingRepository;
+    CommentMapper commentMapper;
+    CommentRepository commentRepository;
+
+    @Override
+    public CommentDto comment(Long userId, Long itemId, CommentDto commentDto) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
+        if (bookingRepository
+                .findByBooker_IdAndStatusAndEndIsBefore(userId,
+                        BookingStatus.APPROVED,
+                        LocalDateTime.now()).isEmpty()) {
+            throw new BookingRequestStatusException("Item can be commented after booking only");
+        }
+        Comment comment = commentMapper.toComment(commentDto, userId, itemId);
+        commentRepository.save(comment);
+
+        return commentMapper.toCommentDto(comment);
+    }
 
     @Override
     public ItemDto getItem(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
-        ItemDto itemDto = ItemMapper.toItemDto(item);
+        ItemDto itemDto = itemMapper.toItemDto(item);
 
         if (userId.equals(item.getUser().getId())) {
             itemDto.setNextBooking(getNextBooking(itemId));
@@ -47,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
         checkUser(userId);
         Item item = itemMapper.toItem(itemDto, userId);
         itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     @Override
@@ -64,13 +90,13 @@ public class ItemServiceImpl implements ItemService {
             item.setDescription(itemDto.getDescription());
         }
         itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     @Override
     public List<ItemDto> getAll(Long userId) {
         return itemRepository.findAllByUserId(userId).stream()
-                .map(ItemMapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .peek(itemDto -> itemDto.setNextBooking(getNextBooking(itemDto.getId())))
                 .peek(itemDto -> itemDto.setLastBooking(getLastBooking(itemDto.getId())))
                 .sorted(Comparator.comparing(ItemDto::getId))
@@ -84,7 +110,7 @@ public class ItemServiceImpl implements ItemService {
         }
         String requestToUpperCase = request.toUpperCase();
         return itemRepository.search(requestToUpperCase).stream()
-                .map(ItemMapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -92,10 +118,10 @@ public class ItemServiceImpl implements ItemService {
         return bookingRepository.findBookings(itemId)
                 .stream()
                 .filter(booking -> booking.getStatus().equals(BookingStatus.APPROVED))
-                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                 .sorted(Comparator.comparing(Booking::getEnd).reversed())
                 .findFirst()
-                .map(BookingMapper::toBookingDto)
+                .map(bookingMapper::toBookingDto)
                 .orElse(null);
     }
 
@@ -106,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
                 .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                 .sorted(Comparator.comparing(Booking::getStart))
                 .findFirst()
-                .map(BookingMapper::toBookingDto)
+                .map(bookingMapper::toBookingDto)
                 .orElse(null);
 
     }
