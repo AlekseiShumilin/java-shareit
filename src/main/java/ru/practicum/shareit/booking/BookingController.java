@@ -27,8 +27,8 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingDtoWithBooker bookingResponse(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                      @PathVariable("bookingId") Long bookingId,
-                                      @RequestParam("approved") String approved) {
+                                                @PathVariable("bookingId") Long bookingId,
+                                                @RequestParam("approved") String approved) {
         log.info("set booking status: booking id - {}, status - {}", bookingId, approved);
         BookingDtoWithBooker booking = bookingService.setStatus(userId, bookingId, approved);
         log.info("set booking status completed: booking - {}", booking);
@@ -37,7 +37,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingDtoWithBooker getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @PathVariable Long bookingId) {
+                                           @PathVariable Long bookingId) {
         log.info("get booking: booking id - {}", bookingId);
         BookingDtoWithBooker booking = bookingService.getBooking(bookingId, userId);
         log.info("get booking completed: booking - {}", booking);
@@ -46,15 +46,16 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDtoWithBooker> getAllBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                           @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                                     @RequestParam(required = false, defaultValue = "ALL") String state) {
         log.info("get all bookings: user id - {}, state - {}", userId, state);
         List<BookingDtoWithBooker> bookings = bookingService.getAll(userId, state);
         log.info("get all bookings: bookings - {}", bookings);
         return bookings;
     }
+
     @GetMapping("/owner")
     public List<BookingDtoWithBooker> getAllBookingsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                           @RequestParam(required = false, defaultValue = "ALL") String state) {
+                                                            @RequestParam(required = false, defaultValue = "ALL") String state) {
         log.info("get all bookings: user id - {}, state - {}", userId, state);
         List<BookingDtoWithBooker> bookings = bookingService.getAllForOwner(userId, state);
         log.info("get all bookings: bookings - {}", bookings);

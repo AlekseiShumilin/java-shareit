@@ -20,7 +20,7 @@ description varchar(200),
 is_available BOOLEAN,
 user_id BIGINT,
 request_id BIGINT,
-CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id)
+CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS BOOKINGS (
@@ -30,8 +30,8 @@ END_DATE TIMESTAMP WITHOUT TIME ZONE,
 ITEM_ID BIGINT,
 BOOKER_ID BIGINT,
 STATUS varchar,
-constraint FK_BOOKINGS_TO_ITEMS FOREIGN KEY (ITEM_ID) references ITEMS(ID),
-constraint FK_BOOKINGS_TO_USERS FOREIGN KEY (BOOKER_ID) references USERS(ID)
+constraint FK_BOOKINGS_TO_ITEMS FOREIGN KEY (ITEM_ID) references ITEMS(ID) ON DELETE CASCADE,
+constraint FK_BOOKINGS_TO_USERS FOREIGN KEY (BOOKER_ID) references USERS(ID) ON DELETE CASCADE
 );
 
 create table if not exists comments (

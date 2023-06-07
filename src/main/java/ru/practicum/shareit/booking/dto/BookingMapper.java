@@ -38,6 +38,7 @@ public class BookingMapper {
         bookingDto.setBooker(booking.getBooker());
         return bookingDto;
     }
+
     public BookingDto toBookingDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
 

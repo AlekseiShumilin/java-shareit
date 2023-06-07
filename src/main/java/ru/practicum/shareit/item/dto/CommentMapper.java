@@ -16,13 +16,15 @@ import java.time.LocalDateTime;
 public class CommentMapper {
     UserRepository userRepository;
     ItemRepository itemRepository;
-    public Comment toComment (CommentDto commentDto, Long userId, Long itemId) {
+
+    public Comment toComment(CommentDto commentDto, Long userId, Long itemId) {
         Comment comment = new Comment();
         comment.setAuthor(userRepository.findById(userId).get());
         comment.setText(commentDto.getText());
         comment.setItem(itemRepository.findById(itemId).get());
         return comment;
     }
+
     public CommentDto toCommentDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto comment(Long userId, Long itemId, CommentDto commentDto) {
-        Item item = itemRepository.findById(itemId)
+        itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
         if (bookingRepository
                 .findByBooker_IdAndStatusAndEndIsBefore(userId,
@@ -115,23 +116,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public BookingDto getLastBooking(Long itemId) {
-        return bookingRepository.findBookings(itemId)
+        return bookingRepository.findByItem_Id(itemId)
                 .stream()
                 .filter(booking -> booking.getStatus().equals(BookingStatus.APPROVED))
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
-                .sorted(Comparator.comparing(Booking::getEnd).reversed())
-                .findFirst()
+                .max(Comparator.comparing(Booking::getEnd))
                 .map(bookingMapper::toBookingDto)
                 .orElse(null);
     }
 
     public BookingDto getNextBooking(Long itemId) {
-        return bookingRepository.findBookings(itemId)
+        return bookingRepository.findByItem_Id(itemId)
                 .stream()
                 .filter(booking -> booking.getStatus().equals(BookingStatus.APPROVED))
                 .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
-                .sorted(Comparator.comparing(Booking::getStart))
-                .findFirst()
+                .min(Comparator.comparing(Booking::getStart))
                 .map(bookingMapper::toBookingDto)
                 .orElse(null);
 
@@ -145,7 +144,7 @@ public class ItemServiceImpl implements ItemService {
     Item checkItem(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
-        if (item.getUser().getId() != userId) {
+        if (!Objects.equals(item.getUser().getId(), userId)) {
             throw new ItemNotFoundException("Item with id " + itemId + " doesn't belong to user with id " + userId);
         }
         return item;

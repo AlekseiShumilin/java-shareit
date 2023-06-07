@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoWithBooker;
@@ -10,7 +12,6 @@ import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,16 +21,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingServiceImpl implements BookingService {
-    private final BookingMapper bookingMapper;
-    private final ItemRepository itemRepository;
-    private final BookingRepository bookingRepository;
-    private final UserRepository userRepository;
+    BookingMapper bookingMapper;
+    ItemRepository itemRepository;
+    BookingRepository bookingRepository;
+    UserRepository userRepository;
 
     @Override
     public BookingDtoWithBooker create(BookingDto bookingDto, Long bookerId) {
         Item item = checkBooking(bookingDto);
-        if(item.getUser().getId().equals(bookerId)) {
+        if (item.getUser().getId().equals(bookerId)) {
             throw new ItemNotFoundException("Item can not be booked by its owner");
         }
         Booking booking = bookingMapper.toBooking(bookingDto, bookerId, item);
@@ -45,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getItem().getUser().getId().equals(userId)) {
             throw new ItemNotFoundException("Booking can be approved by its owner only");
         }
-        if(booking.getStatus().equals(BookingStatus.APPROVED)) {
+        if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new BookingRequestStatusException("Status can not be changed after being approved");
         }
         if (approve.equals("true")) {
@@ -63,14 +65,14 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new BookingNotFoundException("Booking with id " + bookingId + " not found"));
         if (!booking.getBooker().getId().equals(userId) &&
                 !booking.getItem().getUser().getId().equals(userId)) {
-            throw new BookingNotFoundException("Booking can be accessed bu its owner or booker only");
+            throw new BookingNotFoundException("Booking can be accessed by its owner or booker only");
         }
         return bookingMapper.toBookingDtoWithBooker(booking);
     }
 
     @Override
     public List<BookingDtoWithBooker> getAll(Long userId, String status) {
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + userId + " not found"));
 
         BookingRequestStatus enumStatus = checkStatus(status);
@@ -109,7 +111,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDtoWithBooker> getAllForOwner(Long userId, String status) {
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + userId + " not found"));
 
         BookingRequestStatus enumStatus = checkStatus(status);
