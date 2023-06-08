@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable("userId") Integer id) {
+    public User getUser(@PathVariable("userId") Long id) {
         log.info("get-user: id - {}", id);
         User user = userService.getUser(id);
         log.info("get-user completed: user - {}", user);
@@ -43,7 +43,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public User updateUser(@RequestBody UserDto userDto,
-                           @PathVariable("userId") Integer userId) {
+                           @PathVariable("userId") Long userId) {
         log.info("update-user {}", userId);
         User user = userService.update(userDto, userId);
         log.info("update-user completed: user - {}", user);
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable("userId") Integer userId) {
+    public void deleteUser(@PathVariable("userId") Long userId) {
         log.info("delete-user: {} - userId", userId);
         userService.deleteUser(userId);
         log.info("delete-user completed: {} - userId", userId);
